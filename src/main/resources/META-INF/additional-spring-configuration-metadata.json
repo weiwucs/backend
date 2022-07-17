@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "swagger.basePackage",
+      "type": "java.lang.String",
+      "description": "Description for swagger.basePackage."
+  }
+] }
