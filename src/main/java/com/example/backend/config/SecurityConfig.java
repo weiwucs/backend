@@ -39,14 +39,16 @@ public class SecurityConfig {
      * @throws Exception
      */
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable()
-                .sessionManagement()
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf().disable() //use JWT authenticate, so don't need csrf
+                .sessionManagement() //also don't need session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests(auth -> auth.antMatchers("/user/login", "/swagger-ui.html").permitAll()
+                .authorizeRequests(auth -> auth.antMatchers("/user/login").permitAll()
                         .anyRequest().authenticated())
-                .userDetailsService(userDetailsService).build();
+                .userDetailsService(userDetailsService)
+                .build();
     }
 
     @Bean

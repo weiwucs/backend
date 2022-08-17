@@ -16,6 +16,7 @@ public class ResultUtil {
         ResultUtil resultUtil = new ResultUtil();
         resultUtil.setCode(code);
         resultUtil.setData(data);
+        resultUtil.setMessage(msg);
         return resultUtil;
     }
 

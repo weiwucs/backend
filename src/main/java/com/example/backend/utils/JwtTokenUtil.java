@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+import com.example.backend.entity.User;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,30 +28,31 @@ public class JwtTokenUtil {
     private static String tokenHead;
     private static String tokenHeader;
 
-    public static String createToken(String username){
+    public static String createTokenByUser(User user){
         System.out.println(secret);
         System.out.println(tokenHead);
         return JWT.create()
                 .withIssuedAt(new Date())
-                .withClaim("username", username)
+                .withClaim("userId", user.getId())
+                .withClaim("username", user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + expiration))
                 .sign(Algorithm.HMAC512(secret));
     }
 
-    public static String validateToken(String token){
+    public static boolean validateToken(String token){
         try {
             Verification verification = JWT.require(Algorithm.HMAC512(secret));
             JWTVerifier jwtVerifier = verification.build();
 
             DecodedJWT decodedJWT = jwtVerifier.verify(token);
             if(decodedJWT != null){
-                return decodedJWT.getClaim("username").asString();
+                return true;
             }
-            return "";
+            return false;
         } catch (TokenExpiredException e){
             e.printStackTrace();
         }
-        return "";
+        return false;
     }
 
 }
