@@ -1,15 +1,13 @@
 package com.example.backend;
 
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.backend.entity.User;
+import com.example.backend.entity.UserLogin;
 import com.example.backend.utils.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Map;
 
 @SpringBootTest
 public class JwtTest {
@@ -19,22 +17,17 @@ public class JwtTest {
 
     @Test
     public void testJwt(){
-        String username = "username";
+        String username = "username"; //unique
         User user = new User();
         user.setUsername(username);
         user.setId(1L);
-        String tokenByUser = JwtTokenUtil.createTokenByUser(user);
+        UserLogin userLogin = new UserLogin(user);
+        String tokenByUser = JwtTokenUtil.generateToken(userLogin);
         System.out.println(tokenByUser);
-        boolean token = JwtTokenUtil.validateToken(tokenByUser);
+        boolean token = JwtTokenUtil.validateToken(tokenByUser, userLogin);
         System.out.println("token = " + token);
-        DecodedJWT decodedJWT = JwtTokenUtil.decodeToken(tokenByUser);
-        String header = decodedJWT.getHeader();
-        String payload = decodedJWT.getPayload();
-        String signature = decodedJWT.getSignature();
-        String subject = decodedJWT.getSubject();
-        Map<String, Claim> claims = decodedJWT.getClaims();
-        System.out.println(header + " " + payload + " " + signature);
-        System.out.println(subject + " " + claims);
+        Claims claims = JwtTokenUtil.getClaimsFromToken(tokenByUser);
+        System.out.println(claims);
     }
 
     @Test

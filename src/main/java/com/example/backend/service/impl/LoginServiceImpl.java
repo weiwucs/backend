@@ -1,6 +1,5 @@
 package com.example.backend.service.impl;
 
-import com.example.backend.entity.User;
 import com.example.backend.entity.UserLogin;
 import com.example.backend.service.LoginService;
 import com.example.backend.utils.JwtTokenUtil;
@@ -31,11 +30,8 @@ public class LoginServiceImpl implements LoginService {
             throw new RuntimeException("Login fail");
         }
 
-//        UserLogin userLogin = (UserLogin) authentication.getPrincipal();
-//        User user = userLogin.getUser();
-//        String username = user.getUsername();
-//        System.out.println(username);
-//        String token = JwtTokenUtil.createToken(username);
-        return ResultUtil.success("Login success", "token");
+        UserLogin userLogin = (UserLogin) authentication.getPrincipal();
+        String token = JwtTokenUtil.generateToken(userLogin);
+        return ResultUtil.success("Login success", token);
     }
 }
