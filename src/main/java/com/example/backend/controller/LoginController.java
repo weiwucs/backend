@@ -26,7 +26,12 @@ public class LoginController {
     }
 
     @PostMapping("/error")
-    public String error(){
+    public String error() {
         return "redirect:/error.html";
+    }
+
+    @PostMapping("/user/register")
+    public ResultUtil register(){
+        return ResultUtil.success("register success");
     }
 }
