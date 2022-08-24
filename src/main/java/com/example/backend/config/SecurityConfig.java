@@ -1,6 +1,10 @@
 package com.example.backend.config;
 
+import com.example.backend.interceptor.JwtAuthenticationTokenFilter;
+import com.example.backend.interceptor.RestAuthenticationEntryPoint;
+import com.example.backend.interceptor.RestfulAccessDeniedHandler;
 import com.example.backend.service.impl.UserDetailsServiceImpl;
+import io.swagger.models.HttpMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,6 +28,7 @@ public class SecurityConfig {
 
     /**
      * ignore the error of AuthenticationConfiguration type not found
+     * authenticate when login
      * @param authenticationConfiguration
      * @return
      * @throws Exception
@@ -34,6 +40,11 @@ public class SecurityConfig {
 
     /**
      * ignore the error of HttpSecurity type not found
+     * session setting:
+     * always: always save session state, memory will overflow
+     * never: never create session state,but use already created session
+     * if_required: create session state when need
+     * stateless: not save session state, default setting
      * @param http
      * @return
      * @throws Exception
@@ -41,19 +52,49 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
+//                .formLogin()
+//                .loginProcessingUrl("/user/login")
+//                .loginPage("/login.html")
+//                .successForwardUrl("/main")
+//                .failureForwardUrl("/error")
+//                .and()
                 .csrf().disable() //use JWT authenticate, so don't need csrf
                 .sessionManagement() //also don't need session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests(auth -> auth.antMatchers("/user/login").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeRequests()
+                .antMatchers("/user/login", "/upload.html", "/uploads", "/download")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(restfulAccessDeniedHandler())
+                .authenticationEntryPoint(restAuthenticationEntryPoint())
+                .and()
                 .userDetailsService(userDetailsService)
+                .addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter(){
+        return new JwtAuthenticationTokenFilter();
+    }
+
+    @Bean
+    public RestfulAccessDeniedHandler restfulAccessDeniedHandler(){
+        return new RestfulAccessDeniedHandler();
+    }
+
+    @Bean
+    public RestAuthenticationEntryPoint restAuthenticationEntryPoint(){
+        return new RestAuthenticationEntryPoint();
     }
 
     @Bean

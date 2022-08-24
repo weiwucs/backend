@@ -43,4 +43,12 @@ public class ResultUtil {
     public static ResultUtil fail(String msg, Object data){
         return setMessageData(404, msg, data);
     }
+
+    public static ResultUtil unauthorized(Object data){
+        return setMessageData(401, "unauthorized", data);
+    }
+
+    public static ResultUtil forbidden(Object data){
+        return setMessageData(403, "forbidden", data);
+    }
 }
