@@ -31,11 +31,9 @@ public class LoginServiceImpl implements LoginService {
             throw new RuntimeException("Login fail");
         }
 
-//        UserLogin userLogin = (UserLogin) authentication.getPrincipal();
-//        User user = userLogin.getUser();
-//        String username = user.getUsername();
-//        System.out.println(username);
-//        String token = JwtTokenUtil.createToken(username);
-        return ResultUtil.success("Login success", "token");
+        UserLogin userLogin = (UserLogin) authentication.getPrincipal();
+        User user = userLogin.getUser();
+        String token = JwtTokenUtil.createTokenByUser(user);
+        return ResultUtil.success("Login success", token);
     }
 }

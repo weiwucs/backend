@@ -17,4 +17,9 @@ public class LoginController {
     public ResultUtil login(@RequestBody LoginParam loginParam){
         return loginService.login(loginParam);
     }
+
+    @PostMapping("/user/register")
+    public ResultUtil register(){
+        return ResultUtil.success("register success");
+    }
 }
